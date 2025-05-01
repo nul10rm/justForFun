@@ -1,0 +1,26 @@
+accounts:
+  - name: owner
+    balance: 100ether
+  - name: user
+    balance: 1ether
+
+deployments:
+  - name: tramev_contract
+    is_script: true
+    path: "./script/Counter.s.sol"
+    target_contract: "SetupScript"
+    private_key: owner_private_key # Use the private key of owner
+
+# These values will be exposed to the player
+exposed:
+  - tramev_contract_address
+  - user_private_key
+  - user_address
+
+anvil-options:
+  - name: disable-code-size-limit
+    value: --alphanet
+  - chain-id: 1337
+
+verifier: /verifier.py
+flag_path: ./flag.txt
