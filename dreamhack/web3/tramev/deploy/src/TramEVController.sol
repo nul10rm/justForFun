@@ -103,17 +103,19 @@ contract TramEVController is Ownable(msg.sender), IUniswapV3SwapCallback {
         }
     }
 
-    function _handleV3Swap(bytes memory data) internal {
+    function _handleV3Swap(bytes memory data) internal { // initial settings
         (address tokenIn, address tokenOut, uint24 fee, uint256 amountIn, uint256 amountOutMin) =
             abi.decode(data, (address, address, uint24, uint256, uint256));
+        // initial call: gld, slv, 1, 1, 99_999_999 * 1e18
+            // amountOutMin: 99_999_999 * 1e18
+        
+        swapTokenIn = tokenIn; // gld
+        swapTokenOut = tokenOut; // slv
+        swapFee = fee; // 1
+        swapAmountIn = amountIn; // 1
 
-        swapTokenIn = tokenIn;
-        swapTokenOut = tokenOut;
-        swapFee = fee;
-        swapAmountIn = amountIn;
-
-        uint256 b0 = IERC20(tokenIn).balanceOf(address(this));
-        uint256 b1 = IERC20(tokenOut).balanceOf(address(this));
+        uint256 b0 = IERC20(tokenIn).balanceOf(address(this)); // gld => 100_000_000
+        uint256 b1 = IERC20(tokenOut).balanceOf(address(this)); // slv => 100_000_000
 
         ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
             tokenIn: tokenIn,
@@ -128,8 +130,10 @@ contract TramEVController is Ownable(msg.sender), IUniswapV3SwapCallback {
 
         (bool success, bytes memory reason) =
             address(swapRouterV3).call(abi.encodeWithSelector(ISwapRouter.exactInputSingle.selector, params));
+        // swapRouterV3.exactInputSingle(params)
         require(success, "huh");
         require(b0 + amountIn >= IERC20(tokenIn).balanceOf(address(this)), "not enough balance");
+        // 100_000_000 + 1 >= gld balance of this contract
     }
 
     function parameters()

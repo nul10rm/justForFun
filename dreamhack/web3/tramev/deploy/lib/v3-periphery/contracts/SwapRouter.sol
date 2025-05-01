@@ -94,8 +94,8 @@ contract SwapRouter is
         if (recipient == address(0)) recipient = address(this);
 
         (address tokenIn, address tokenOut, uint24 fee) = data.path.decodeFirstPool();
-
-        bool zeroForOne = tokenIn < tokenOut;
+        // path = abi.encodePacked(params.tokenIn, params.fee, params.tokenOut)
+        bool zeroForOne = tokenIn < tokenOut; // 주소간 대소비교 통해 정렬
 
         (int256 amount0, int256 amount1) =
             getPool(tokenIn, tokenOut, fee).swap(
